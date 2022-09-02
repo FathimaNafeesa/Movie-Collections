@@ -1,0 +1,5 @@
+requests
+environ
+requests
+djangorestframework
+djangorestframework-simplejwt
