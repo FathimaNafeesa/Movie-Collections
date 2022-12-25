@@ -3,3 +3,4 @@ environs==9.5.0
 requests
 djangorestframework
 djangorestframework-simplejwt
+"/home/myusername/Movie-Collections/MovieCollection"
