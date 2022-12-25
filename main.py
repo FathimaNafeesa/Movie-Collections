@@ -1,16 +1,9 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+from mysite.wsgi import application
+# App Engine by default looks for a main.py file at the root of the app
+# directory with a WSGI-compatible object called app.
+# This file imports the WSGI-compatible object of the Django app,
+# application from mysite/wsgi.py and renames it app so it is
+# discoverable by App Engine without additional configuration.
+# Alternatively, you can add a custom entrypoint field in your app.yaml:
+# entrypoint: gunicorn -b :$PORT mysite.wsgi
+app = application

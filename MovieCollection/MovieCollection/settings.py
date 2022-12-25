@@ -31,8 +31,7 @@ SECRET_KEY = 'django-insecure-wvau-69av7*6ug*am)wiz2n3eua5cjld9p5i$+fnwevse+7ihr
 DEBUG = False
 
 ALLOWED_HOSTS = ['nth-rarity-372710.appspot.com',
-    '127.0.0.1', ]
-
+                 '127.0.0.1', ]
 
 # Application definition
 
@@ -95,14 +94,15 @@ DATABASES = {
         'NAME': 'mc_database',
         'USER': 'fathimanafeesa',
         'PASSWORD': 'aydin',
-        'PORT': '5432',
-        'HOST':'35.203.3.108',
+        'PORT': '3306',
+        'HOST': '127.0.0.1',
         'OS_THIRD_PARTY_URL': env('OS_THIRD_PARTY_URL'),
         'OS_THIRD_PARTY_AUTH': env('OS_THIRD_PARTY_AUTH'),
         'OS_THIRD_PARTY_PASSWORD': env('OS_THIRD_PARTY_PASSWORD')
 
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -136,15 +136,12 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-
 # collectstatic directory (located OUTSIDE the base directory)
 
-#STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'STATIC-BUCKET-NAME')
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'STATIC-BUCKET-NAME')
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
-
-
 
 
 # Static files (CSS, JavaScript, Images)
