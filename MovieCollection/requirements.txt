@@ -1,5 +1,5 @@
 requests
-environ
+environs==9.5.0
 requests
 djangorestframework
 djangorestframework-simplejwt

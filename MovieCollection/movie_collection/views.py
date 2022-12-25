@@ -1,6 +1,6 @@
 import os
 
-import environ
+import environs as environ
 import requests
 from django.db.models import Count
 from django.http import HttpResponse, Http404, JsonResponse, HttpResponseNotFound
