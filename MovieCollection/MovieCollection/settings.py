@@ -28,9 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wvau-69av7*6ug*am)wiz2n3eua5cjld9p5i$+fnwevse+7ihr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', ]
+ALLOWED_HOSTS = []
+
 
 # Application definition
 
@@ -87,21 +88,21 @@ WSGI_APPLICATION = 'MovieCollection.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'mc_database',
         'USER': 'fathimanafeesa',
         'PASSWORD': 'aydin',
-        'HOST': '127.0.0.1',
-        'PORT':'3306',
+        'PORT': '5432',
+        'HOST':'35.203.3.108',
         'OS_THIRD_PARTY_URL': env('OS_THIRD_PARTY_URL'),
         'OS_THIRD_PARTY_AUTH': env('OS_THIRD_PARTY_AUTH'),
         'OS_THIRD_PARTY_PASSWORD': env('OS_THIRD_PARTY_PASSWORD')
 
-    },
+    }
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -128,22 +129,22 @@ CACHES = {
 }
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-
-# collectstatic directory (located OUTSIDE the base directory)
-
-# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'STATIC-BUCKET-NAME')
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
