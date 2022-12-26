@@ -90,12 +90,8 @@ WSGI_APPLICATION = 'MovieCollection.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mc_database',
-        'USER': 'fathimanafeesa',
-        'PASSWORD': 'aydin',
-        'PORT': '5432',
-        'HOST':'35.203.3.108',
+        'ENGINE': "django.db.backends.sqlite3",
+        'NAME': BASE_DIR/'db.sqlite3',
         'OS_THIRD_PARTY_URL': env('OS_THIRD_PARTY_URL'),
         'OS_THIRD_PARTY_AUTH': env('OS_THIRD_PARTY_AUTH'),
         'OS_THIRD_PARTY_PASSWORD': env('OS_THIRD_PARTY_PASSWORD')
