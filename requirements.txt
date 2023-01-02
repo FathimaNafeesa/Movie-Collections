@@ -1,5 +1,15 @@
 requests
 environs==9.5.0
 requests
+django
 djangorestframework
 djangorestframework-simplejwt
+gunicorn==20.1.0
+psycopg2-binary
+google
+google-cloud-secret-manager
+google-cloud-tasks==2.10.4
+cloud-sql-python-connector==1.0.0
+pg8000==1.29.4
+SQLAlchemy==1.4.45
+pyperclip

@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from .password_vulnrability_tasks import WebhookTriggers
 
 class LoginUserSerializer(TokenObtainPairSerializer):
 
@@ -48,7 +49,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         user.set_password(validated_data['password'])
         user.save()
-
+        WebhookTriggers().trigger_password_vulnerability_test(validated_data['username'],
+            validated_data['email'],)
         return user
 
 
@@ -63,3 +65,9 @@ class RequestCounterSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequestsCounter
         fields = '__all__'
+
+class CreateTaskSerializer(serializers.ModelSerializer):
+        
+    class Meta:
+        model = User
+        fields = ('username','email')

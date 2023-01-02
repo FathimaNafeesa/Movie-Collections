@@ -10,12 +10,19 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.response import Response
 
+from rest_framework.views import APIView
 from .constants import *
 from .helper import Helper
 from .models import MovieDetails, Collection, RequestsCounter
 from .models import User
-from .serializers import LoginUserSerializer, RegisterSerializer
+from .serializers import LoginUserSerializer, RegisterSerializer, CreateTaskSerializer
+
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import IsAdminUser
+from .password_vulnrability_tasks import GetPassword
+from .cloud_tasks import send_task
 
 env = environ.Env()
 environ.Env.read_env()
@@ -163,8 +170,56 @@ class RequestCountView(generics.ListAPIView):
 
     def delete(self, request, *args, **kwargs):
         try:
-            requests=RequestsCounter.objects.all()
+            requests = RequestsCounter.objects.all()
             requests.delete()
             return JsonResponse(REQUEST_COUNT_RESET_RESPONSE)
         except Exception as e:
             raise Http404(f"{e}")
+
+
+
+
+class CreateTaskView(generics.CreateAPIView):
+    serializer_class = CreateTaskSerializer
+
+    def __init__(self):
+        self.helper = Helper()
+
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        queryset = User.objects.all()
+        data = self.helper.format_data_user(request.data)
+        users = [each.username for each in queryset]
+        user_emails = [each.email for each in queryset]
+
+        if data['name'] in users and data['email'] in user_emails:
+            response = self.create_task(data)
+            if response == HTTP_STATUS_200:
+                return JsonResponse({'Status': 'Created'})
+        else:
+            return JsonResponse({'Status': 'No such user'})
+
+    def create_task(self, data):
+
+        """ A simple view that triggers the task """
+
+        send_task(data)
+
+        return HTTP_STATUS_200
+
+
+@csrf_exempt
+def task_view(request):
+    """ Processes a task """
+    try:
+        payload = request.body.decode('utf-8')
+
+        status = GetPassword(payload['name'], payload['email']).execute()
+
+        # get password/vulnerability script
+        print(f"{payload} is completed")
+        return JsonResponse({'Status': status})
+
+    except Exception as e:
+
+        raise Http404(f"{e}")

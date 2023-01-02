@@ -53,3 +53,8 @@ class Helper:
         c_uuid = str(uuid.uuid4())
         return self.get_movie_list(response, c_uuid, user_id)
 
+    def format_data_user(self,response):
+        return {
+            'name':response['username'],
+            'email':response['email']
+        }

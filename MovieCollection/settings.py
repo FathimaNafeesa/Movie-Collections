@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 import environs as environ
+import io
+import os
+from urllib.parse import urlparse
+import google.auth
+from google.cloud import secretmanager
 
 # Initialise environment variables
 env = environ.Env()
@@ -30,8 +35,10 @@ SECRET_KEY = 'django-insecure-wvau-69av7*6ug*am)wiz2n3eua5cjld9p5i$+fnwevse+7ihr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ["*"]
+PROJECT_NAME = "MyDjangoProject"
+QUEUE_REGION = "asia-south1"
+QUEUE_ID = "task-queue-1"
 
 # Application definition
 
@@ -90,14 +97,19 @@ WSGI_APPLICATION = 'MovieCollection.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': "django.db.backends.sqlite3",
-        'NAME': BASE_DIR/'db.sqlite3',
-        'OS_THIRD_PARTY_URL': env('OS_THIRD_PARTY_URL'),
-        'OS_THIRD_PARTY_AUTH': env('OS_THIRD_PARTY_AUTH'),
-        'OS_THIRD_PARTY_PASSWORD': env('OS_THIRD_PARTY_PASSWORD')
-
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': "34.100.148.25",
+        "PORT":5432,
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'NAME': 'mc_db',
     }
 }
+# Use django-environ to parse the connection string
+# If the flag as been set, configure to use proxy
+if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
+    DATABASES["default"]["HOST"] = "127.0.0.1"
+    DATABASES["default"]["PORT"] = 5432
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -146,3 +158,38 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+env_file = os.path.join(BASE_DIR, ".env")
+
+# Attempt to load the Project ID into the environment, safely failing on error.
+try:
+    _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+except google.auth.exceptions.DefaultCredentialsError:
+    pass
+
+if os.path.isfile(env_file):
+    # Use a local secret file, if provided
+
+    env.read_env(env_file)
+# ...
+elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+    # Pull secrets from Secret Manager
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+
+    client = secretmanager.SecretManagerServiceClient()
+    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    print(name)
+    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+    print(payload)
+    env.read_env(io.StringIO(payload))
+else:
+    raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+
+# Use django-environ to parse the connection string
+
+# If the flag as been set, configure to use proxy
+if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
+    DATABASES["default"]["HOST"] = "127.0.0.1"
+    DATABASES["default"]["PORT"] = 5432
