@@ -1,4 +1,4 @@
-from substitute import *
+from .substitute import *
 import requests
 import pyperclip
 import argparse

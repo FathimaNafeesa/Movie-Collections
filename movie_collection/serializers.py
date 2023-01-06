@@ -1,11 +1,13 @@
+import rsa
 from rest_framework import serializers
-from .models import User, RequestsCounter
+from .models import User, RequestsCounter, Profile
 from .models import Collection
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .password_vulnrability_tasks import WebhookTriggers
+
 
 class LoginUserSerializer(TokenObtainPairSerializer):
 
@@ -46,11 +48,19 @@ class RegisterSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             email=validated_data['email'],
         )
-
+        import bcrypt
+        password = validated_data['password']
+        password = password.encode('utf-8')
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
         user.set_password(validated_data['password'])
         user.save()
-        WebhookTriggers().trigger_password_vulnerability_test(validated_data['username'],
-            validated_data['email'],)
+        WebhookTriggers().trigger_password_vulnerability_test_(validated_data['username'],
+                                                               validated_data['email'], )
+        user_profile = Profile.objects.create(
+            user=user,
+            hash_key=hashed_password
+        )
+        user_profile.save()
         return user
 
 
@@ -66,8 +76,8 @@ class RequestCounterSerializer(serializers.ModelSerializer):
         model = RequestsCounter
         fields = '__all__'
 
+
 class CreateTaskSerializer(serializers.ModelSerializer):
-        
     class Meta:
         model = User
-        fields = ('username','email')
+        fields = ('username', 'email')

@@ -14,5 +14,4 @@ urlpatterns = [
     path('request-count/', views.RequestCountView.as_view(), name='request-count'),
     path('request-count/reset/', views.RequestCountView.as_view(), name='request-count'),
     path('create_task/', views.CreateTaskView.as_view(), name='create_task'),
-    path("task/", views.task_view, name="task_view"),
 ]

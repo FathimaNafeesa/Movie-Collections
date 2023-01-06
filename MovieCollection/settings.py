@@ -98,11 +98,11 @@ WSGI_APPLICATION = 'MovieCollection.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': "34.100.148.25",
-        "PORT":5432,
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'NAME': 'mc_db',
+        'HOST': "mcdb.cdfzbrpdwpbo.ap-northeast-1.rds.amazonaws.com",
+        "PORT": 5432,
+        'USER': 'postgres',
+        'PASSWORD': 'Admin.123',
+        'NAME': 'postgres',
     }
 }
 # Use django-environ to parse the connection string
@@ -113,7 +113,6 @@ if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -137,7 +136,6 @@ CACHES = {
 }
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -158,7 +156,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 env_file = os.path.join(BASE_DIR, ".env")
 

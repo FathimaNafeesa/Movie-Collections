@@ -1,7 +1,7 @@
 from itertools import product
-from .lists import subDict
-from .lists import dummyCharacters
-from .lists import numbersOnly
+from movie_collection.checkvulnerabilty.lists import subDict
+from movie_collection.checkvulnerabilty.lists import dummyCharacters
+from movie_collection.checkvulnerabilty.lists import numbersOnly
 
 
 # returns the cartesian product of all replaceable characters

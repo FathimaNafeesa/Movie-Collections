@@ -13,3 +13,6 @@ cloud-sql-python-connector==1.0.0
 pg8000==1.29.4
 SQLAlchemy==1.4.45
 pyperclip
+django
+rsa
+zappa

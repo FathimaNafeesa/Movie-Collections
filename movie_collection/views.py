@@ -1,18 +1,20 @@
+import json
 import os
 
 import environs as environ
 import requests
+from django.db import transaction
 from django.db.models import Count
 from django.http import HttpResponse, Http404, JsonResponse, HttpResponseNotFound
+from django.utils.decorators import method_decorator
+
 from requests.auth import HTTPDigestAuth
 from django.contrib.auth import logout
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.response import Response
 
-from rest_framework.views import APIView
 from .constants import *
 from .helper import Helper
 from .models import MovieDetails, Collection, RequestsCounter
@@ -20,9 +22,8 @@ from .models import User
 from .serializers import LoginUserSerializer, RegisterSerializer, CreateTaskSerializer
 
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.permissions import IsAdminUser
-from .password_vulnrability_tasks import GetPassword
-from .cloud_tasks import send_task
+
+from .password_vulnrability_tasks import WebhookTriggers
 
 env = environ.Env()
 environ.Env.read_env()
@@ -177,15 +178,14 @@ class RequestCountView(generics.ListAPIView):
             raise Http404(f"{e}")
 
 
-
-
 class CreateTaskView(generics.CreateAPIView):
     serializer_class = CreateTaskSerializer
 
     def __init__(self):
         self.helper = Helper()
 
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
+    @method_decorator(transaction.non_atomic_requests)
     def post(self, request, *args, **kwargs):
         queryset = User.objects.all()
         data = self.helper.format_data_user(request.data)
@@ -194,8 +194,7 @@ class CreateTaskView(generics.CreateAPIView):
 
         if data['name'] in users and data['email'] in user_emails:
             response = self.create_task(data)
-            if response == HTTP_STATUS_200:
-                return JsonResponse({'Status': 'Created'})
+            return JsonResponse({'Status': response})
         else:
             return JsonResponse({'Status': 'No such user'})
 
@@ -203,23 +202,14 @@ class CreateTaskView(generics.CreateAPIView):
 
         """ A simple view that triggers the task """
 
-        send_task(data)
+        payload = data
 
-        return HTTP_STATUS_200
+        status = WebhookTriggers().task_api_action(payload['name'], payload['email'])
 
-
-@csrf_exempt
-def task_view(request):
-    """ Processes a task """
-    try:
-        payload = request.body.decode('utf-8')
-
-        status = GetPassword(payload['name'], payload['email']).execute()
-
-        # get password/vulnerability script
+            # get password/vulnerability script
         print(f"{payload} is completed")
-        return JsonResponse({'Status': status})
+        return {'Password Vulnerability': 'Task initiated'}
 
-    except Exception as e:
 
-        raise Http404(f"{e}")
+
+
